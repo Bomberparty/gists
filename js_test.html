@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      async function doTest() {
+        try {
+          await new Promise((resolve, reject) => {
+            reject("onetwo"); // Это выбросит ошибку, и она будет перехвачена await
+          });
+        } catch (e) {
+          console.log("Error: ", e);
+        }
+      }
+
+      doTest();
+    </script>
+  </body>
+</html>

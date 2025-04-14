@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Отчет о компетенциях разработчика</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Отчет о компетенциях разработчика</h1>
+        <canvas id="performanceChart" width="400" height="200"></canvas>
+        <canvas id="qualityChart" width="400" height="200"></canvas>
+        <canvas id="activityChart" width="400" height="200"></canvas>
+        <canvas id="experienceChart" width="400" height="200"></canvas>
+        <canvas id="communicationChart" width="400" height="200"></canvas>
+        <canvas id="learningChart" width="400" height="200"></canvas>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                metrics: {
+                    performance: {
+                        tasksCompleted: 30,
+                        taskSpeed: 2,
+                        tasksCompletedPercentage: 95
+                    },
+                    quality: {
+                        errorPercentage: 5,
+                        reviewedCodePercentage: 80,
+                        fixedErrorsPercentage: 90
+                    },
+                    activity: {
+                        commitsFrequency: 10,
+                        reviewActivity: 20,
+                        commentActivity: 50
+                    },
+                    experience: {
+                        technologies: ['Python', 'JavaScript', 'SQL'],
+                        technologyLevel: 'Продвинутый',
+                        frameworks: ['Django', 'React', 'Pandas']
+                    },
+                    communication: {
+                        collaborativeTasks: 15,
+                        communicationActivity: 100,
+                        reviewFeedback: 30
+                    },
+                    learning: {
+                        coursesCompleted: 2,
+                        publications: 1,
+                        conferences: 3
+                    }
+                }
+            },
+            mounted() {
+                this.createPerformanceChart();
+                this.createQualityChart();
+                this.createActivityChart();
+                this.createExperienceChart();
+                this.createCommunicationChart();
+                this.createLearningChart();
+            },
+            methods: {
+                createPerformanceChart() {
+                    new Chart(document.getElementById('performanceChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Выполненные задачи', 'Скорость задач', 'Процент завершенных задач'],
+                            datasets: [{
+                                label: 'Производительность',
+                                data: [
+                                    this.metrics.performance.tasksCompleted,
+                                    this.metrics.performance.taskSpeed,
+                                    this.metrics.performance.tasksCompletedPercentage
+                                ],
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                },
+                createQualityChart() {
+                    new Chart(document.getElementById('qualityChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Процент ошибок', 'Процент ревьюированного кода', 'Процент исправленных ошибок'],
+                            datasets: [{
+                                label: 'Качество кода',
+                                data: [
+                                    this.metrics.quality.errorPercentage,
+                                    this.metrics.quality.reviewedCodePercentage,
+                                    this.metrics.quality.fixedErrorsPercentage
+                                ],
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                },
+                createActivityChart() {
+                    new Chart(document.getElementById('activityChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Частота коммитов', 'Активность в ревью', 'Активность в комментариях'],
+                            datasets: [{
+                                label: 'Активность и вовлеченность',
+                                data: [
+                                    this.metrics.activity.commitsFrequency,
+                                    this.metrics.activity.reviewActivity,
+                                    this.metrics.activity.commentActivity
+                                ],
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                },
+                createExperienceChart() {
+                    new Chart(document.getElementById('experienceChart'), {
+                        type: 'pie',
+                        data: {
+                            labels: this.metrics.experience.technologies,
+                            datasets: [{
+                                label: 'Используемые технологии',
+                                data: [1, 1, 1],
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        }
+                    });
+                },
+                createCommunicationChart() {
+                    new Chart(document.getElementById('communicationChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Совместные задачи', 'Активность в коммуникации', 'Ревью и фидбэк'],
+                            datasets: [{
+                                label: 'Коммуникация и командная работа',
+                                data: [
+                                    this.metrics.communication.collaborativeTasks,
+                                    this.metrics.communication.communicationActivity,
+                                    this.metrics.communication.reviewFeedback
+                                ],
+                                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                },
+                createLearningChart() {
+                    new Chart(document.getElementById('learningChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: ['Пройденные курсы', 'Публикации', 'Конференции'],
+                            datasets: [{
+                                label: 'Обучение и развитие',
+                                data: [
+                                    this.metrics.learning.coursesCompleted,
+                                    this.metrics.learning.publications,
+                                    this.metrics.learning.conferences
+                                ],
+                                backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                                borderColor: 'rgba(255, 159, 64, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
