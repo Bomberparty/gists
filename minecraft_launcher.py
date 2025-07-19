@@ -5,6 +5,10 @@ import uuid
 import subprocess
 import sys
 import threading
+import json
+import os
+
+PROFILE_FILE = "profile.json"
 
 
 class MinecraftLauncher:
@@ -62,22 +66,33 @@ class MinecraftLauncher:
         installer = MinecraftInstaller()
         installer.run()
 
+    def _get_minecraft_options(self):
+        if not (os.path.exists(PROFILE_FILE)):
+            options = {
+                "username": self.username_input.get()
+                if not (self.username_input.get() == "")
+                else "TEST",
+                "uuid": str(uuid.uuid4()),
+            }
+            with open(PROFILE_FILE, "w") as f:
+                json.dump(options, f)
+
+        options = json.load(open(PROFILE_FILE, "r").read())
+        if self.version_select.get() in ["1.13", "1.14", "1.16.5"]:
+            options["jvmArguments"] = [
+                "-Dminecraft.api.auth.host=https://nope.invalid",
+                "-Dminecraft.api.account.host=https://nope.invalid",
+                "-Dminecraft.api.session.host=https://nope.invalid",
+                "-Dminecraft.api.services.host=https://nope.invalid",
+            ]
+        return options
+
     def _launch_game(self):
         """Launch Minecraft with configured settings"""
         self.version = self.version_select.get()
         self.window.withdraw()
 
-        options = {
-            "username": self.username_input.get(),
-            "uuid": str(uuid.uuid4()),
-            "jvmArguments": [
-                "-Dminecraft.api.auth.host=https://nope.invalid",
-                "-Dminecraft.api.account.host=https://nope.invalid",
-                "-Dminecraft.api.session.host=https://nope.invalid",
-                "-Dminecraft.api.services.host=https://nope.invalid",
-            ],
-        }
-
+        options = self._get_minecraft_options()
         minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(
             self.version,  # Now properly scoped as instance variable
             self.minecraft_directory,
