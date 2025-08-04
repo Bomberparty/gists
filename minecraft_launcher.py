@@ -76,15 +76,14 @@ class MinecraftLauncher:
             }
             with open(PROFILE_FILE, "w") as f:
                 json.dump(options, f)
-
-        options = json.load(open(PROFILE_FILE, "r").read())
-        if self.version_select.get() in ["1.13", "1.14", "1.16.5"]:
-            options["jvmArguments"] = [
-                "-Dminecraft.api.auth.host=https://nope.invalid",
-                "-Dminecraft.api.account.host=https://nope.invalid",
-                "-Dminecraft.api.session.host=https://nope.invalid",
-                "-Dminecraft.api.services.host=https://nope.invalid",
-            ]
+        else:
+            options = json.load(open(PROFILE_FILE, "r"))
+        options["jvmArguments"] = [
+            "-Dminecraft.api.auth.host=https://nope.invalid",
+            "-Dminecraft.api.account.host=https://nope.invalid",
+            "-Dminecraft.api.session.host=https://nope.invalid",
+            "-Dminecraft.api.services.host=https://nope.invalid",
+        ]
         return options
 
     def _launch_game(self):
@@ -94,7 +93,7 @@ class MinecraftLauncher:
 
         options = self._get_minecraft_options()
         minecraft_command = minecraft_launcher_lib.command.get_minecraft_command(
-            self.version,  # Now properly scoped as instance variable
+            self.version,
             self.minecraft_directory,
             options,
         )
@@ -127,7 +126,6 @@ class MinecraftInstaller:
 
     def _create_widgets(self):
         """Create all GUI widgets"""
-
         # Version selection components
         self.version_label = Label(self.window, text="Version:")
         versions = minecraft_launcher_lib.utils.get_available_versions(
@@ -139,16 +137,14 @@ class MinecraftInstaller:
 
         # Launch button
         self.launch_button = Button(
-            self.window, text="Launch", command=self._start_launch_process
+            self.window, text="Install", command=self._start_launch_process
         )
 
     def _setup_layout(self):
         """Arrange widgets in the window"""
-        self.username_label.grid(row=0, column=0)
-        self.username_input.grid(row=0, column=1)
-        self.version_label.grid(row=1, column=0)
-        self.version_select.grid(row=1, column=1)
-        self.launch_button.grid(row=2, column=1)
+        self.version_label.grid(row=0, column=0)
+        self.version_select.grid(row=0, column=1)
+        self.launch_button.grid(row=1, column=1)
 
     def _start_launch_process(self):
         """Handle launch button click"""
@@ -160,13 +156,8 @@ class MinecraftInstaller:
         threading.Thread(target=self._install_minecraft, daemon=True).start()
 
     def _hide_input_widgets(self):
-        """Hide username and version inputs"""
-        for widget in [
-            self.username_input,
-            self.version_select,
-            self.username_label,
-            self.version_label,
-        ]:
+        """Hide version inputs"""
+        for widget in [self.version_select, self.version_label]:
             widget.grid_remove()
 
     def _show_progress_widgets(self):
@@ -216,7 +207,6 @@ class MinecraftInstaller:
     def run(self):
         """Start the application"""
         self.window.mainloop()
-
 
 if __name__ == "__main__":
     launcher = MinecraftLauncher()
