@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Элементы блок-схем для копирования</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .elements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .element-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .element-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .element-preview {
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+            background-color: #f8f9fa;
+        }
+        
+        .element-info {
+            padding: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .element-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .element-desc {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .copy-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            display: block;
+            width: 100%;
+        }
+        
+        .copy-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .code-container {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .instructions {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructions h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        /* Стили для элементов блок-схемы */
+        .flowchart-element {
+            margin: 10px;
+        }
+        
+        /* Начало/Конец */
+        .terminator {
+            width: 200px;
+            height: 60px;
+            background-color: #2ecc71;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Процесс */
+        .process {
+            width: 200px;
+            height: 60px;
+            background-color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Решение */
+        .decision {
+            width: 120px;
+            height: 120px;
+            background-color: #e74c3c;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .decision span {
+            transform: rotate(-45deg);
+            text-align: center;
+            padding: 10px;
+        }
+        
+        /* Данные (ввод/вывод) */
+        .data {
+            width: 200px;
+            height: 60px;
+            background-color: #f39c12;
+            transform: skewX(-20deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .data span {
+            transform: skewX(20deg);
+        }
+        
+        /* Предопределенный процесс */
+        .predefined {
+            width: 200px;
+            height: 60px;
+            background-color: #9b59b6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .predefined:before, .predefined:after {
+            content: '';
+            position: absolute;
+            height: 100%;
+            width: 8px;
+            background-color: #8e44ad;
+            top: 0;
+        }
+        
+        .predefined:before {
+            left: 5px;
+        }
+        
+        .predefined:after {
+            right: 5px;
+        }
+        
+        /* Документ */
+        .document {
+            width: 200px;
+            height: 70px;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .document:before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            right: 20px;
+            height: 20px;
+            background-color: #16a085;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        /* Соединитель */
+        .connector {
+            width: 60px;
+            height: 60px;
+            background-color: #95a5a6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Линия со стрелкой */
+        .arrow-line {
+            width: 200px;
+            height: 40px;
+            position: relative;
+        }
+        
+        .arrow-line .line {
+            width: 170px;
+            height: 4px;
+            background-color: #34495e;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .arrow-line .arrow {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-left: 15px solid #34495e;
+        }
+        
+        /* Цикл */
+        .loop {
+            width: 180px;
+            height: 100px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .loop:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid #e67e22;
+            border-radius: 10px 50px 10px 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Основные элементы блок-схем</h1>
+            <p class="description">Ниже представлены основные элементы блок-схем с готовым кодом HTML/CSS. Нажмите "Скопировать код" под любым элементом, чтобы получить код для вставки в ваш проект.</p>
+        </header>
+        
+        <div class="instructions">
+            <h2>Как использовать</h2>
+            <ol>
+                <li>Найдите нужный элемент блок-схемы</li>
+                <li>Нажмите кнопку "Скопировать код" под элементом</li>
+                <li>Вставьте скопированный код в ваш HTML-документ</li>
+                <li>При необходимости измените текст или стили элемента</li>
+            </ol>
+        </div>
+        
+        <div class="elements-grid">
+            <!-- Элемент 1: Начало/Конец -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element terminator">
+                        Начало
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Начало/Конец</h3>
+                    <p class="element-desc">Скругленный прямоугольник, обозначающий начало или конец алгоритма</p>
+                    <button class="copy-btn" data-element="terminator">Скопировать код</button>
+                    <div class="code-container" id="code-terminator">
+<!-- Код для элемента "Начало/Конец" -->
+<div class="terminator">
+    Начало
+</div>
+
+<style>
+.terminator {
+    width: 200px;
+    height: 60px;
+    background-color: #2ecc71;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 2: Процесс -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element process">
+                        Процесс
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Процесс</h3>
+                    <p class="element-desc">Прямоугольник, обозначающий выполнение операции или действия</p>
+                    <button class="copy-btn" data-element="process">Скопировать код</button>
+                    <div class="code-container" id="code-process">
+<!-- Код для элемента "Процесс" -->
+<div class="process">
+    Процесс
+</div>
+
+<style>
+.process {
+    width: 200px;
+    height: 60px;
+    background-color: #3498db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 3: Решение -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element decision">
+                        <span>Решение</span>
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Решение</h3>
+                    <p class="element-desc">Ромб, обозначающий условие или проверку (ветвление алгоритма)</p>
+                    <button class="copy-btn" data-element="decision">Скопировать код</button>
+                    <div class="code-container" id="code-decision">
+<!-- Код для элемента "Решение" -->
+<div class="decision">
+    <span>Решение</span>
+</div>
+
+<style>
+.decision {
+    width: 120px;
+    height: 120px;
+    background-color: #e74c3c;
+    transform: rotate(45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.decision span {
+    transform: rotate(-45deg);
+    text-align: center;
+    padding: 10px;
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 4: Данные (ввод/вывод) -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element data">
+                        <span>Ввод данных</span>
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Данные (ввод/вывод)</h3>
+                    <p class="element-desc">Параллелограмм, обозначающий ввод или вывод данных</p>
+                    <button class="copy-btn" data-element="data">Скопировать код</button>
+                    <div class="code-container" id="code-data">
+<!-- Код для элемента "Данные" -->
+<div class="data">
+    <span>Ввод данных</span>
+</div>
+
+<style>
+.data {
+    width: 200px;
+    height: 60px;
+    background-color: #f39c12;
+    transform: skewX(-20deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.data span {
+    transform: skewX(20deg);
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 5: Предопределенный процесс -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element predefined">
+                        Подпрограмма
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Предопределенный процесс</h3>
+                    <p class="element-desc">Прямоугольник с двойными вертикальными линиями, обозначающий вызов подпрограммы или функции</p>
+                    <button class="copy-btn" data-element="predefined">Скопировать код</button>
+                    <div class="code-container" id="code-predefined">
+<!-- Код для элемента "Предопределенный процесс" -->
+<div class="predefined">
+    Подпрограмма
+</div>
+
+<style>
+.predefined {
+    width: 200px;
+    height: 60px;
+    background-color: #9b59b6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.predefined:before, .predefined:after {
+    content: '';
+    position: absolute;
+    height: 100%;
+    width: 8px;
+    background-color: #8e44ad;
+    top: 0;
+}
+
+.predefined:before {
+    left: 5px;
+}
+
+.predefined:after {
+    right: 5px;
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 6: Документ -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element document">
+                        Документ
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Документ</h3>
+                    <p class="element-desc">Элемент в виде документа, обозначающий вывод на печать или формирование отчета</p>
+                    <button class="copy-btn" data-element="document">Скопировать код</button>
+                    <div class="code-container" id="code-document">
+<!-- Код для элемента "Документ" -->
+<div class="document">
+    Документ
+</div>
+
+<style>
+.document {
+    width: 200px;
+    height: 70px;
+    background-color: #1abc9c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    position: relative;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.document:before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    right: 20px;
+    height: 20px;
+    background-color: #16a085;
+    border-radius: 5px 5px 0 0;
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 7: Соединитель -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element connector">
+                        1
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Соединитель</h3>
+                    <p class="element-desc">Круг, обозначающий переход к другой части схемы (обычно с номером)</p>
+                    <button class="copy-btn" data-element="connector">Скопировать код</button>
+                    <div class="code-container" id="code-connector">
+<!-- Код для элемента "Соединитель" -->
+<div class="connector">
+    1
+</div>
+
+<style>
+.connector {
+    width: 60px;
+    height: 60px;
+    background-color: #95a5a6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 8: Стрелка -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element arrow-line">
+                        <div class="line"></div>
+                        <div class="arrow"></div>
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Стрелка (линия связи)</h3>
+                    <p class="element-desc">Линия со стрелкой, обозначающая направление потока алгоритма</p>
+                    <button class="copy-btn" data-element="arrow-line">Скопировать код</button>
+                    <div class="code-container" id="code-arrow-line">
+<!-- Код для элемента "Стрелка" -->
+<div class="arrow-line">
+    <div class="line"></div>
+    <div class="arrow"></div>
+</div>
+
+<style>
+.arrow-line {
+    width: 200px;
+    height: 40px;
+    position: relative;
+}
+
+.arrow-line .line {
+    width: 170px;
+    height: 4px;
+    background-color: #34495e;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.arrow-line .arrow {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 15px solid #34495e;
+}
+</style>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Элемент 9: Цикл -->
+            <div class="element-card">
+                <div class="element-preview">
+                    <div class="flowchart-element loop">
+                        Цикл
+                    </div>
+                </div>
+                <div class="element-info">
+                    <h3 class="element-title">Цикл</h3>
+                    <p class="element-desc">Элемент для обозначения начала или конца циклического процесса</p>
+                    <button class="copy-btn" data-element="loop">Скопировать код</button>
+                    <div class="code-container" id="code-loop">
+<!-- Код для элемента "Цикл" -->
+<div class="loop">
+    Цикл
+</div>
+
+<style>
+.loop {
+    width: 180px;
+    height: 100px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+.loop:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 4px solid #e67e22;
+    border-radius: 10px 50px 10px 50px;
+}
+</style>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Элементы блок-схем для копирования. Используйте код в своих проектах!</p>
+            <p>Чтобы изменить размеры, цвета или текст элементов, отредактируйте скопированный код.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Добавляем обработчики для кнопок копирования
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const elementId = this.getAttribute('data-element');
+                    const codeElement = document.getElementById(`code-${elementId}`);
+                    
+                    // Показываем код перед копированием
+                    codeElement.style.display = 'block';
+                    
+                    // Выделяем текст для копирования
+                    const range = document.createRange();
+                    range.selectNode(codeElement);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    
+                    try {
+                        // Пытаемся скопировать текст в буфер обмена
+                        const successful = document.execCommand('copy');
+                        const originalText = this.textContent;
+                        
+                        if (successful) {
+                            this.textContent = 'Код скопирован!';
+                            this.style.backgroundColor = '#27ae60';
+                            
+                            // Возвращаем исходный текст через 2 секунды
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                                this.style.backgroundColor = '#3498db';
+                            }, 2000);
+                        } else {
+                            this.textContent = 'Не удалось скопировать';
+                            this.style.backgroundColor = '#e74c3c';
+                            
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                                this.style.backgroundColor = '#3498db';
+                            }, 2000);
+                        }
+                    } catch (err) {
+                        console.error('Ошибка при копировании: ', err);
+                        this.textContent = 'Ошибка при копировании';
+                        this.style.backgroundColor = '#e74c3c';
+                        
+                        setTimeout(() => {
+                            this.textContent = 'Скопировать код';
+                            this.style.backgroundColor = '#3498db';
+                        }, 2000);
+                    }
+                    
+                    // Снимаем выделение
+                    window.getSelection().removeAllRanges();
+                });
+            });
+            
+            // Закрываем код при клике вне элемента
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.copy-btn') && !e.target.closest('.code-container')) {
+                    const codeContainers = document.querySelectorAll('.code-container');
+                    codeContainers.forEach(container => {
+                        container.style.display = 'none';
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
