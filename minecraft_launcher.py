@@ -1,12 +1,13 @@
-from tkinter import Tk, Label, Entry, Button
-from tkinter.ttk import Combobox, Progressbar
-import minecraft_launcher_lib
-import uuid
+import json
+import os
 import subprocess
 import sys
 import threading
-import json
-import os
+import uuid
+from tkinter import Button, Entry, Label, Tk
+from tkinter.ttk import Combobox, Progressbar
+
+import minecraft_launcher_lib
 
 PROFILE_FILE = "profile.json"
 
@@ -40,6 +41,7 @@ class MinecraftLauncher:
         versions = minecraft_launcher_lib.utils.get_installed_versions(
             self.minecraft_directory
         )
+        versions.append({"id": "not found"})
         self.version_list = [v["id"] for v in versions]
         self.version_select = Combobox(self.window, values=self.version_list)
         self.version_select.current(0)
@@ -207,6 +209,7 @@ class MinecraftInstaller:
     def run(self):
         """Start the application"""
         self.window.mainloop()
+
 
 if __name__ == "__main__":
     launcher = MinecraftLauncher()
